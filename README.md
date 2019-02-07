@@ -1,2 +1,0 @@
-# RxJavaTestProject
-Android RxJava
