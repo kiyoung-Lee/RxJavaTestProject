@@ -131,6 +131,9 @@ public class RxJavaSample2 {
     }
 
 
+    // Subject 은 내부적으로 Subscriber의 생명주기를 관리하므로 구독자 수를 신경쓰지 않고 onNext로
+    // 이벤트를 밀어내도 된다.
+
     @Test
     public void subjectTest() {
         PublishSubject<String> subject = PublishSubject.create();
@@ -147,6 +150,7 @@ public class RxJavaSample2 {
 
     @Test
     public void asyncSubjectTest() {
+        // 이벤트를 캐시했다가 onComplete() 호출시 전달한다.
         AsyncSubject<String> asyncSubject = AsyncSubject.create();
 
         asyncSubject.onNext("test1");
@@ -157,12 +161,13 @@ public class RxJavaSample2 {
 
         asyncSubjectObservable.subscribe(s -> System.out.println(s));
 
-        asyncSubject.onComplete();
         asyncSubject.onNext("test4");
+        asyncSubject.onComplete();
     }
 
     @Test
     public void behaviorSubjectTest() {
+        // 구독시 마지막 이벤트를 캐시하고있다가 전달한다.
         BehaviorSubject<String> behaviorSubject = BehaviorSubject.create();
 
         behaviorSubject.onNext("test1");
@@ -179,6 +184,7 @@ public class RxJavaSample2 {
 
     @Test
     public void replaySubjectTest() {
+        // 모든 이벤트를 캐시한다. 무한스트림 등에서 메모리 누수에 주의해야 한다.
         ReplaySubject<String> replaySubject = ReplaySubject.create();
 
         replaySubject.onNext("test1");
@@ -186,5 +192,9 @@ public class RxJavaSample2 {
 
         Observable<String> replaySubjectObservable = replaySubject;
 
+        replaySubjectObservable.subscribe(s -> System.out.println(s));
+
+        replaySubject.onNext("test3");
+        replaySubject.onNext("test4");
     }
 }
